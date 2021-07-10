@@ -14,12 +14,13 @@ from configparser import ConfigParser
 # Every profile is an own section, [default] being the default one
 # Configuration items are returned by init to make i18n and application-specific options possible
 
-def init(profile = 'default'):
+def init(profile = 'default', schema='latest'):
 	global gw2_config
 	config_parser = ConfigParser();
 	config_parser.read([os.path.join(os.path.dirname(os.path.realpath(__file__)),
 	 'config.ini'), os.path.expanduser('~/.gw2rc')])
 	gw2_config = {}
+	gw2_config['schema'] = schema
 	gw2_config['api_key'] = config_parser.get(profile, 'api_key')
 	gw2_config['language'] = config_parser.get(profile,
 	 'language') if config_parser.has_option(profile, 'language') else 'en'
@@ -45,15 +46,22 @@ def init(profile = 'default'):
 	config_items['language'] = gw2_config['language']
 	return config_items
 
+def create_handle(path):
+	handle = pycurl.Curl()
+	handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
+	handle.setopt(pycurl.HTTPHEADER, [
+	 'Accept: application/json',
+	 'X-Schema-Version: %s' % gw2_config['schema'],
+	 'Authorization: Bearer %s' % gw2_config['api_key'],
+	 'Accept-Language: %s' % gw2_config['language']])
+	handle.setopt(pycurl.FOLLOWLOCATION, True)
+	return handle
 
 def get_single(path):
 	if not 'gw2_config' in globals():
 		init()
+	handle = create_handle(path)
 	response = BytesIO()
-	handle = pycurl.Curl()
-	handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
-	handle.setopt(pycurl.HTTPHEADER, ['Authorization: Bearer %s' % gw2_config['api_key'],
-	 'Accept-Language: %s' % gw2_config['language']])
 	handle.setopt(pycurl.WRITEFUNCTION, response.write)
 	handle.perform()
 	status = handle.getinfo(pycurl.HTTP_CODE)
@@ -70,12 +78,9 @@ def get_multi(paths):
 	requests = []
 	multi = pycurl.CurlMulti()
 	for path in paths:
-		handle = pycurl.Curl()
+		handle = create_handle(path)
 		response = BytesIO()
 		request = ({'path': path, 'response': response, 'handle': handle})
-		handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
-		handle.setopt(pycurl.HTTPHEADER, ['Authorization: Bearer %s' % gw2_config['api_key'],
-		 'Accept-Language: %s' % gw2_config['language']])
 		handle.setopt(pycurl.WRITEFUNCTION, request['response'].write)
 		multi.add_handle(request['handle'])
 		requests.append(request)
