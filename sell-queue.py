@@ -14,16 +14,21 @@ def main():
 	if not args.quiet:
 		print(_('Current sell transactions of %s:') % query['account']['name'])
 		items = {}
-		for item in gw2api.get_list('items', map(lambda transaction: transaction['item_id'], query[transactions_path])):
+		for item in gw2api.get_list('items',
+		 map(lambda transaction: transaction['item_id'], query[transactions_path])):
 			items[item['id']] = item
-		for transaction in sorted(query[transactions_path], key=lambda transaction: transaction['created']):
-			print('%3d %s - %s' % ( transaction['quantity'], items[transaction['item_id']]['name'], gold(transaction['price'])))
+		for transaction in sorted(query[transactions_path],
+		 key=lambda transaction: transaction['created']):
+			print('%3d %s - %s' % ( transaction['quantity'], 
+			 items[transaction['item_id']]['name'], gold(transaction['price'])))
 
 # PSEUDO-I18N
 messages = ({'de': {}})
 
-messages['de']['Current sell transactions of %s:'] = u'Aktuelle Verkaufstransaktionen von %s:'
-messages['de']['No current sell transactions of %s.'] = u'Keine aktuellen Verkaufstransaktionen von %s.'
+messages['de']['Current sell transactions of %s:'] = \
+ u'Aktuelle Verkaufstransaktionen von %s:'
+messages['de']['No current sell transactions of %s.'] = \
+ u'Keine aktuellen Verkaufstransaktionen von %s.'
 
 def _(text):
 	if config['language'] in messages:
@@ -34,7 +39,8 @@ def _(text):
 # MAIN
 import argparse
 argparser=argparse.ArgumentParser(description='List all unfullfilled sell transactions.')
-argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE', help='Profile in INI file')
+argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
+ help='Profile in INI file')
 argparser.add_argument('-q', '--quiet', dest='quiet', action='store_true',
  help='Dont''t output any text.')
 args = argparser.parse_args()

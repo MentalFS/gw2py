@@ -79,7 +79,7 @@ def main():
 		if args.verbose:
 			print(_('Adding %s - %d items, %s / %s') %
 			 (item_info[item]['name'] if item in item_info else '[%d]' % item,
-			 count, gold(sum_buy), gold(sum_sell)))
+			  count, gold(sum_buy), gold(sum_sell)))
 		largest = largest_single if count == 1 and not item in material_ids else largest_stack
 		if sum_buy > largest['sum_buy']:
 			largest['item'] = item
@@ -102,8 +102,10 @@ def main():
 	
 	if not args.short:
 		for material in sorted(material_sums):
-			print(_('Material: %s - %s / %s') % ( material_names[material],
-			 gold(material_sums[material]['sum_buy']), gold(material_sums[material]['sum_sell'])))
+			print(_('Material: %s - %s / %s') % \
+			 (material_names[material],
+			  gold(material_sums[material]['sum_buy']),
+			  gold(material_sums[material]['sum_sell'])))
 		print(_('Items that are not materials - %s / %s') %
 		 (gold(nonmaterial_sum_buy), gold(nonmaterial_sum_sell)))
 		print('')
@@ -111,26 +113,38 @@ def main():
 			for item in gw2api.get_list('items', [largest_single['item'], largest_stack['item']]):
 				item_info[item['id']] = item
 		if largest_single['item'] > 0:
-			print(_('Most valuable single item: %s - %s / %s.') % (item_info[largest_single['item']]['name'],
-			 gold(largest_single['sum_buy']), gold(largest_single['sum_sell'])))
+			print(_('Most valuable single item: %s - %s / %s.') % \
+			 (item_info[largest_single['item']]['name'],
+			  gold(largest_single['sum_buy']),
+			  gold(largest_single['sum_sell'])))
 		if largest_stack['item'] > 0:
-			print(_('Most valuable stack: %s - %d items, %s / %s.') % (item_info[largest_stack['item']]['name'],
-			 item_counts[largest_stack['item']], gold(largest_stack['sum_buy']), gold(largest_stack['sum_sell'])))
+			print(_('Most valuable stack: %s - %d items, %s / %s.') % \
+			 (item_info[largest_stack['item']]['name'],
+			  item_counts[largest_stack['item']],
+			  gold(largest_stack['sum_buy']),
+			  gold(largest_stack['sum_sell'])))
 		if largest_single['item'] > 0 or largest_stack['item'] > 0:
 			print('')
-	print(_('%s, your storage is worth %s / %s.') % (query['account']['name'],
-	 gold(total_sum_buy), gold(total_sum_sell)))
+	print(_('%s, your storage is worth %s / %s.') % \
+	 (query['account']['name'], gold(total_sum_buy), gold(total_sum_sell)))
 
 # PSEUDO-I18N
 messages = ({'de': {}})
 
-messages['de']['Analyzing storage of %s...'] = u'Analysiere Lager von %s...'
-messages['de']['Adding %s - %d items, %s / %s'] = u'Füge %s hinzu - %d Gegenstände, %s / %s'
-messages['de']['Material: %s - %s / %s'] = u'Material: %s - %s / %s'
-messages['de']['Items that are not materials - %s / %s'] = u'Gegenstände, die keine Materialien sind - %s / %s'
-messages['de']['Most valuable single item: %s - %s / %s.'] = u'Wertvollster Einzelgegenstand: %s - %s / %s.'
-messages['de']['Most valuable stack: %s - %d items, %s / %s.'] = u'Wertvollster Stapel: %s - %d Stück, %s / %s.'
-messages['de']['%s, your storage is worth %s / %s.'] = u'%s, dein Lager hat einen Wert von %s / %s.'
+messages['de']['Analyzing storage of %s...'] = \
+ u'Analysiere Lager von %s...'
+messages['de']['Adding %s - %d items, %s / %s'] = \
+ u'Füge %s hinzu - %d Gegenstände, %s / %s'
+messages['de']['Material: %s - %s / %s'] = \
+ u'Material: %s - %s / %s'
+messages['de']['Items that are not materials - %s / %s'] = \
+ u'Gegenstände, die keine Materialien sind - %s / %s'
+messages['de']['Most valuable single item: %s - %s / %s.'] = \
+ u'Wertvollster Einzelgegenstand: %s - %s / %s.'
+messages['de']['Most valuable stack: %s - %d items, %s / %s.'] = \
+ u'Wertvollster Stapel: %s - %d Stück, %s / %s.'
+messages['de']['%s, your storage is worth %s / %s.'] = \
+ u'%s, dein Lager hat einen Wert von %s / %s.'
 
 def _(text):
 	if config['language'] in messages:
@@ -140,14 +154,16 @@ def _(text):
 
 # MAIN
 import argparse
-argparser=argparse.ArgumentParser(description='''Compute the value of items lying around in your bank/materials
- storage and materials in your character's inventories. Value output is (Maximum buy offer / maximum sell offer).
- This is only a rough value and does not count in taxes or the amount of offers.''')
+argparser=argparse.ArgumentParser(description='''Compute the value of items lying around in your
+ bank/materials storage and materials in your character's inventories. Value output is (Maximum buy
+ offer / maximum sell offer). This is only a rough value and does not count in taxes or the amount 
+ of offers.''')
 argparser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
  help='Output more info while adding up')
 argparser.add_argument('-s', '--short', dest='short', action='store_true',
  help='Only output the sum line, no other information.')
-argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE', help='Profile in INI file')
+argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
+ help='Profile in INI file')
 args = argparser.parse_args()
 
 config = gw2api.init(args.profile)

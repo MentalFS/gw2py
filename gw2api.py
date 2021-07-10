@@ -2,13 +2,13 @@ import os, re, json, pycurl
 from StringIO import StringIO
 from ConfigParser import ConfigParser
 
-# This script expects an ini-file, either config.ini at the script location or ~/.gw2rc
+# These scripts expect an ini-file, either config.ini at the script location or ~/.gw2rc
 # 
 # [default]
 # api_key=<YOUR API KEY>
 # language=<LANG>  # default: en
 #
-# Every profile is it's own section, [default] being the default one
+# Every profile is an own section, [default] being the default one
 # Configuration items are returned by init to make i18n and application-specific options possible
 
 def init(profile = 'default'):
@@ -56,11 +56,6 @@ def get_single(path):
 	status = handle.getinfo(pycurl.HTTP_CODE)
 	if not status in [200, 204, 206]:
 		text = response.getvalue()
-		#try:
-		#	message = json.loads(text)
-		#	text = message['text'] if 'text' in message else message['error']
-		#except ValueError:
-		#	pass
 		raise IOError('%s\nError %s [%s]' % (text, status, path))
 	handle.close()
 	return json.loads(response.getvalue())
@@ -95,11 +90,6 @@ def get_multi(paths):
 		status = request['handle'].getinfo(pycurl.HTTP_CODE)
 		if not status in [200, 204, 206]:
 			text = request['response'].getvalue()
-			#try:
-			#	message = json.loads(text)
-			#	text = message['text'] if 'text' in message else message['error']
-			#except ValueError:
-			#	pass
 			raise IOError('%s\nError %s [%s]' % (text, status, request['path']))
 		request['handle'].close()
 		results[request['path']] = json.loads(request['response'].getvalue())

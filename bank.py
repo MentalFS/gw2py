@@ -4,8 +4,6 @@
 import gw2api
 from gw2api import format_gold as gold
 
-#TODO upgrades/skins
-
 def main():
 	account = gw2api.get_multi(['account', 'account/bank'])
 	print(_("Bank contents of %s:") % account['account']['name'])
@@ -41,7 +39,8 @@ def _(text):
 # MAIN
 import argparse
 argparser=argparse.ArgumentParser(description='List the items of an account\'s bank tab.')
-argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE', help='Profile in INI file')
+argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
+ help='Profile in INI file')
 args = argparser.parse_args()
 
 config = gw2api.init(args.profile)

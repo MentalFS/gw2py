@@ -93,10 +93,6 @@ def main():
 			print "===", colored(_('Blue worlds'), 'cyan'), "==="
 			for world in sorted(worlds_by_color['blue']):
 				print world_names[world]
-	
-#	import json
-#	print json.dumps(world_info, indent=4)
-
 
 # PSEUDO-I18N
 messages = ({'de': {}})
@@ -118,7 +114,8 @@ argparser.add_argument('-a', '--all', dest='all', action='store_true',
  help='List info for all worlds.')
 argparser.add_argument('-c', '--color', dest='color', action='store_true',
  help='List info for worlds by color.')
-argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE', help='Profile in INI file')
+argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
+ help='Profile in INI file')
 args = argparser.parse_args()
 
 config = gw2api.init(args.profile)
