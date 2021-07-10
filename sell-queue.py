@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import gw2api, sys
@@ -9,26 +9,26 @@ def main():
 	query = gw2api.get_multi(['account', transactions_path])
 	if len(query[transactions_path]) == 0:
 		if not args.quiet:
-			print(_('No current sell transactions of %s.') % query['account']['name'])
+			print((_('No current sell transactions of %s.') % query['account']['name']))
 		sys.exit(1)
 	if not args.quiet:
-		print(_('Current sell transactions of %s:') % query['account']['name'])
+		print((_('Current sell transactions of %s:') % query['account']['name']))
 		items = {}
 		for item in gw2api.get_list('items',
-		 map(lambda transaction: transaction['item_id'], query[transactions_path])):
+		 [transaction['item_id'] for transaction in query[transactions_path]]):
 			items[item['id']] = item
 		for transaction in sorted(query[transactions_path],
 		 key=lambda transaction: transaction['created']):
-			print('%3d %s - %s' % ( transaction['quantity'], 
-			 items[transaction['item_id']]['name'], gold(transaction['price'])))
+			print(('%3d %s - %s' % ( transaction['quantity'], 
+			 items[transaction['item_id']]['name'], gold(transaction['price']))))
 
 # PSEUDO-I18N
 messages = ({'de': {}})
 
 messages['de']['Current sell transactions of %s:'] = \
- u'Aktuelle Verkaufstransaktionen von %s:'
+ 'Aktuelle Verkaufstransaktionen von %s:'
 messages['de']['No current sell transactions of %s.'] = \
- u'Keine aktuellen Verkaufstransaktionen von %s.'
+ 'Keine aktuellen Verkaufstransaktionen von %s.'
 
 def _(text):
 	if config['language'] in messages:

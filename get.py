@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import gw2api, json, argparse
 
@@ -11,4 +12,4 @@ args = argparser.parse_args()
 config = gw2api.init(args.profile)
 
 
-print json.dumps(gw2api.get_single(args.url), indent=4);
+print(json.dumps(gw2api.get_single(args.url), indent=4));

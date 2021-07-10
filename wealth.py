@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import gw2api
@@ -9,12 +9,11 @@ def main():
 	
 	characters_path='characters?page=0'
 	query = gw2api.get_multi(['account', 'account/bank', 'account/materials', characters_path])
-	material_ids = map(lambda material: material['id'], query['account/materials'])
-	item_ids = set(map(lambda item: item['id'] if item else None,
-	 query['account/bank'] + query['account/materials']))
+	material_ids = [material['id'] for material in query['account/materials']]
+	item_ids = set([item['id'] if item else None for item in query['account/bank'] + query['account/materials']])
 	
 	if not args.short:
-		print(_('Analyzing storage of %s...') % query['account']['name'])
+		print((_('Analyzing storage of %s...') % query['account']['name']))
 		print('')
 	
 	inventory_slots = []
@@ -77,9 +76,9 @@ def main():
 		sum_sell = item_prices[item]['sells']['unit_price'] * count
 	
 		if args.verbose:
-			print(_('Adding %s - %d items, %s / %s') %
+			print((_('Adding %s - %d items, %s / %s') %
 			 (item_info[item]['name'] if item in item_info else '[%d]' % item,
-			  count, gold(sum_buy), gold(sum_sell)))
+			  count, gold(sum_buy), gold(sum_sell))))
 		largest = largest_single if count == 1 and not item in material_ids else largest_stack
 		if sum_buy > largest['sum_buy']:
 			largest['item'] = item
@@ -102,49 +101,49 @@ def main():
 	
 	if not args.short:
 		for material in sorted(material_sums):
-			print(_('Material: %s - %s / %s') % \
+			print((_('Material: %s - %s / %s') % \
 			 (material_names[material],
 			  gold(material_sums[material]['sum_buy']),
-			  gold(material_sums[material]['sum_sell'])))
-		print(_('Items that are not materials - %s / %s') %
-		 (gold(nonmaterial_sum_buy), gold(nonmaterial_sum_sell)))
+			  gold(material_sums[material]['sum_sell']))))
+		print((_('Items that are not materials - %s / %s') %
+		 (gold(nonmaterial_sum_buy), gold(nonmaterial_sum_sell))))
 		print('')
 		if not args.verbose:
 			for item in gw2api.get_list('items', [largest_single['item'], largest_stack['item']]):
 				item_info[item['id']] = item
 		if largest_single['item'] > 0:
-			print(_('Most valuable single item: %s - %s / %s.') % \
+			print((_('Most valuable single item: %s - %s / %s.') % \
 			 (item_info[largest_single['item']]['name'],
 			  gold(largest_single['sum_buy']),
-			  gold(largest_single['sum_sell'])))
+			  gold(largest_single['sum_sell']))))
 		if largest_stack['item'] > 0:
-			print(_('Most valuable stack: %s - %d items, %s / %s.') % \
+			print((_('Most valuable stack: %s - %d items, %s / %s.') % \
 			 (item_info[largest_stack['item']]['name'],
 			  item_counts[largest_stack['item']],
 			  gold(largest_stack['sum_buy']),
-			  gold(largest_stack['sum_sell'])))
+			  gold(largest_stack['sum_sell']))))
 		if largest_single['item'] > 0 or largest_stack['item'] > 0:
 			print('')
-	print(_('%s, your storage is worth %s / %s.') % \
-	 (query['account']['name'], gold(total_sum_buy), gold(total_sum_sell)))
+	print((_('%s, your storage is worth %s / %s.') % \
+	 (query['account']['name'], gold(total_sum_buy), gold(total_sum_sell))))
 
 # PSEUDO-I18N
 messages = ({'de': {}})
 
 messages['de']['Analyzing storage of %s...'] = \
- u'Analysiere Lager von %s...'
+ 'Analysiere Lager von %s...'
 messages['de']['Adding %s - %d items, %s / %s'] = \
- u'Füge %s hinzu - %d Gegenstände, %s / %s'
+ 'Füge %s hinzu - %d Gegenstände, %s / %s'
 messages['de']['Material: %s - %s / %s'] = \
- u'Material: %s - %s / %s'
+ 'Material: %s - %s / %s'
 messages['de']['Items that are not materials - %s / %s'] = \
- u'Gegenstände, die keine Materialien sind - %s / %s'
+ 'Gegenstände, die keine Materialien sind - %s / %s'
 messages['de']['Most valuable single item: %s - %s / %s.'] = \
- u'Wertvollster Einzelgegenstand: %s - %s / %s.'
+ 'Wertvollster Einzelgegenstand: %s - %s / %s.'
 messages['de']['Most valuable stack: %s - %d items, %s / %s.'] = \
- u'Wertvollster Stapel: %s - %d Stück, %s / %s.'
+ 'Wertvollster Stapel: %s - %d Stück, %s / %s.'
 messages['de']['%s, your storage is worth %s / %s.'] = \
- u'%s, dein Lager hat einen Wert von %s / %s.'
+ '%s, dein Lager hat einen Wert von %s / %s.'
 
 def _(text):
 	if config['language'] in messages:

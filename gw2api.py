@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import os, re, json, pycurl
-from StringIO import StringIO
-from ConfigParser import ConfigParser
+from io import BytesIO
+from configparser import ConfigParser
 
 # These scripts expect an ini-file, either config.ini at the script location or ~/.gw2rc
 # 
@@ -46,7 +49,7 @@ def init(profile = 'default'):
 def get_single(path):
 	if not 'gw2_config' in globals():
 		init()
-	response = StringIO()
+	response = BytesIO()
 	handle = pycurl.Curl()
 	handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
 	handle.setopt(pycurl.HTTPHEADER, ['Authorization: Bearer %s' % gw2_config['api_key'],
@@ -68,7 +71,7 @@ def get_multi(paths):
 	multi = pycurl.CurlMulti()
 	for path in paths:
 		handle = pycurl.Curl()
-		response = StringIO()
+		response = BytesIO()
 		request = ({'path': path, 'response': response, 'handle': handle})
 		handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
 		handle.setopt(pycurl.HTTPHEADER, ['Authorization: Bearer %s' % gw2_config['api_key'],

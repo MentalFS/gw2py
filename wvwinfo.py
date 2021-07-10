@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import gw2api
@@ -31,7 +31,7 @@ def main():
 		if not match_filter(match):
 			continue
 		
-		if args.all and output_break: print
+		if args.all and output_break: print()
 		output_break = True
 
 		is_own_match = False
@@ -56,50 +56,50 @@ def main():
 				own_color = color
 			
 		if args.all or is_own_match:
-			print "=== %s %s (%s) ===" % (_('Matchup'), match['id'], match['start_time'][:10])
-			print "  ", colored(world_names[match['worlds']['green']], 'green'),
+			print("=== %s %s (%s) ===" % (_('Matchup'), match['id'], match['start_time'][:10]))
+			print("  ", colored(world_names[match['worlds']['green']], 'green'), end=' ')
 			if 'all_worlds'	in match:
 				for world in match['all_worlds']['green']:
 					if world != match['worlds']['green']:
-						print "+", colored(world_names[world], 'green'),
-			print "(%s)" % match['scores']['green']
-			print "vs", colored(world_names[match['worlds']['red']], 'red'),
+						print("+", colored(world_names[world], 'green'), end=' ')
+			print("(%s)" % match['scores']['green'])
+			print("vs", colored(world_names[match['worlds']['red']], 'red'), end=' ')
 			if 'all_worlds'	in match:
 				for world in match['all_worlds']['red']:
 					if world != match['worlds']['red']:
-						print "+", colored(world_names[world], 'red'),
-			print "(%s)" % match['scores']['red']
-			print "vs", colored(world_names[match['worlds']['blue']], 'cyan'),
+						print("+", colored(world_names[world], 'red'), end=' ')
+			print("(%s)" % match['scores']['red'])
+			print("vs", colored(world_names[match['worlds']['blue']], 'cyan'), end=' ')
 			if 'all_worlds'	in match:
 				for world in match['all_worlds']['blue']:
 					if world != match['worlds']['blue']:
-						print "+", colored(world_names[world], 'cyan'),
-			print "(%s)" % match['scores']['blue']
+						print("+", colored(world_names[world], 'cyan'), end=' ')
+			print("(%s)" % match['scores']['blue'])
 
 	
 	if args.color:
 		if args.all or own_color == 'green':
-			print
-			print "===", colored(_('Green worlds'), 'green'), "==="
+			print()
+			print("===", colored(_('Green worlds'), 'green'), "===")
 			for world in sorted(worlds_by_color['green']):
-				print world_names[world]
+				print(world_names[world])
 		if args.all or own_color == 'red':
-			print
-			print "===", colored(_('Red worlds'), 'red'), "==="
+			print()
+			print("===", colored(_('Red worlds'), 'red'), "===")
 			for world in sorted(worlds_by_color['red']):
-				print world_names[world]
+				print(world_names[world])
 		if args.all or own_color == 'blue':
-			print
-			print "===", colored(_('Blue worlds'), 'cyan'), "==="
+			print()
+			print("===", colored(_('Blue worlds'), 'cyan'), "===")
 			for world in sorted(worlds_by_color['blue']):
-				print world_names[world]
+				print(world_names[world])
 
 # PSEUDO-I18N
 messages = ({'de': {}})
-messages['de']['Matchup'] = u'Zuordnung'
-messages['de']['Green worlds'] = u'Grüne Welten'
-messages['de']['Red worlds'] = u'Rote Welten'
-messages['de']['Blue worlds'] = u'Blaue Welten'
+messages['de']['Matchup'] = 'Zuordnung'
+messages['de']['Green worlds'] = 'Grüne Welten'
+messages['de']['Red worlds'] = 'Rote Welten'
+messages['de']['Blue worlds'] = 'Blaue Welten'
 
 def _(text):
 	if config['language'] in messages:
