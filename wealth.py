@@ -5,16 +5,17 @@ import gw2api
 from gw2api import format_gold as gold
 
 def main():
+	# for some reason account bound items ended up in the auction house
 	ignored_items = [ 19983 ]
 	
 	characters_path='characters?page=0'
 	query = gw2api.get_multi(['account', 'account/bank', 'account/materials', characters_path])
 	material_ids = [material['id'] for material in query['account/materials']]
-	item_ids = set([item['id'] if item else None for item in query['account/bank'] + query['account/materials']])
+	item_ids = set([item['id'] if item else None for item in
+		query['account/bank'] + query['account/materials']])
 	
 	if not args.short:
 		print((_('Analyzing storage of %s...') % query['account']['name']))
-		print('')
 	
 	inventory_slots = []
 	for character in query[characters_path]:
@@ -57,8 +58,8 @@ def main():
 	
 	total_sum_buy = 0
 	total_sum_sell = 0
-	largest_stack = ({'item': -1, 'sum_buy': 0, 'sum_sell': 0})
-	largest_single = ({'item': -1, 'sum_buy': 0, 'sum_sell': 0})
+	largest_stack = ({'item': None, 'sum_buy': 0, 'sum_sell': 0})
+	largest_single = ({'item': None, 'sum_buy': 0, 'sum_sell': 0})
 	material_sums = {}
 	nonmaterial_sum_buy = 0
 	nonmaterial_sum_sell = 0
@@ -96,10 +97,9 @@ def main():
 		
 		total_sum_buy += sum_buy
 		total_sum_sell += sum_sell
-	if args.verbose:
-		print('')
 	
 	if not args.short:
+		print('')
 		for material in sorted(material_sums):
 			print((_('Material: %s - %s / %s') % \
 			 (material_names[material],
@@ -111,18 +111,18 @@ def main():
 		if not args.verbose:
 			for item in gw2api.get_list('items', [largest_single['item'], largest_stack['item']]):
 				item_info[item['id']] = item
-		if largest_single['item'] > 0:
+		if largest_single['item']:
 			print((_('Most valuable single item: %s - %s / %s.') % \
 			 (item_info[largest_single['item']]['name'],
 			  gold(largest_single['sum_buy']),
 			  gold(largest_single['sum_sell']))))
-		if largest_stack['item'] > 0:
+		if largest_stack['item']:
 			print((_('Most valuable stack: %s - %d items, %s / %s.') % \
 			 (item_info[largest_stack['item']]['name'],
 			  item_counts[largest_stack['item']],
 			  gold(largest_stack['sum_buy']),
 			  gold(largest_stack['sum_sell']))))
-		if largest_single['item'] > 0 or largest_stack['item'] > 0:
+		if largest_single['item'] or largest_stack['item']:
 			print('')
 	print((_('%s, your storage is worth %s / %s.') % \
 	 (query['account']['name'], gold(total_sum_buy), gold(total_sum_sell))))
