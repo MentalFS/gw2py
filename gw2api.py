@@ -35,7 +35,6 @@ def init(profile = 'default', schema='latest'):
 		gw2_config['copper_unit'] = 'b'
 		gw2_config['silver_unit'] = 'p'
 		gw2_config['gold_unit'] = 'o'
-
 	if gw2_config['language'].startswith('fr'):
 		gw2_config['copper_unit'] = 'c'
 		gw2_config['silver_unit'] = 'a'
@@ -141,3 +140,18 @@ def format_gold(copper):
 	else:
 		parts.append('0%s' % gw2_config['copper_unit'])
 	return ' '.join(parts)
+
+if __name__ == "__main__":
+	import argparse
+
+	argparser=argparse.ArgumentParser(description='Get raw json from GW2 API v2')
+	argparser.add_argument(dest='url', metavar='URL', help='URL',
+	 nargs='?', default='../v2.json')
+	argparser.add_argument('-p', '--profile', dest='profile', default='default',
+	 help='Profile in INI file')
+	argparser.add_argument('-s', '--schema', dest='schema', default='latest',
+	 help='Schema version (UTC ISO8601 timestamp)')
+	args = argparser.parse_args()
+
+	config = init(args.profile, args.schema)
+	print(json.dumps(get_single(args.url), indent=4));
