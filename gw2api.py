@@ -17,35 +17,33 @@ from configparser import ConfigParser
 def init(profile = 'default', schema='latest'):
 	global gw2_config
 	config_parser = ConfigParser();
-	config_parser.read([os.path.join(os.path.dirname(os.path.realpath(__file__)),
-	 'config.ini'), os.path.expanduser('~/.gw2rc')])
+	config_parser.read([
+	 os.path.join(os.path.dirname(os.path.realpath(__file__)), 'config.ini'),
+	 os.path.expanduser('~/.gw2rc')])
 	gw2_config = {}
 	gw2_config['schema'] = schema
 	gw2_config['api_key'] = config_parser.get(profile, 'api_key')
 	gw2_config['language'] = config_parser.get(profile,
 	 'language') if config_parser.has_option(profile, 'language') else 'en'
-	gw2_config['copper_unit'] = 'c'
-	gw2_config['silver_unit'] = 's'
-	gw2_config['gold_unit'] = 'g'
+
+	gw2_config.update({'copper_unit': 'c', 'silver_unit': 's','gold_unit': 'g'});
 	if gw2_config['language'].startswith('de'):
-		gw2_config['copper_unit'] = 'k'
-		gw2_config['silver_unit'] = 's'
-		gw2_config['gold_unit'] = 'g'
+		gw2_config.update({'copper_unit': 'k', 'silver_unit': 's','gold_unit': 'g'});
 	if gw2_config['language'].startswith('es'):
-		gw2_config['copper_unit'] = 'b'
-		gw2_config['silver_unit'] = 'p'
-		gw2_config['gold_unit'] = 'o'
+		gw2_config.update({'copper_unit': 'b', 'silver_unit': 'p','gold_unit': 'o'});
 	if gw2_config['language'].startswith('fr'):
-		gw2_config['copper_unit'] = 'c'
-		gw2_config['silver_unit'] = 'a'
-		gw2_config['gold_unit'] = 'o'
+		gw2_config.update({'copper_unit': 'c', 'silver_unit': 'a','gold_unit': 'o'});
+
 	config_items = {}
 	for key, value in config_parser.items(profile):
 		config_items[key] = value
 	config_items['language'] = gw2_config['language']
 	return config_items
 
+
 def create_handle(path):
+	if not 'gw2_config' in globals():
+		init()
 	handle = pycurl.Curl()
 	handle.setopt(pycurl.URL, 'https://api.guildwars2.com/v2/%s' % path)
 	handle.setopt(pycurl.HTTPHEADER, [
@@ -55,6 +53,7 @@ def create_handle(path):
 	 'Accept-Language: %s' % gw2_config['language']])
 	handle.setopt(pycurl.FOLLOWLOCATION, True)
 	return handle
+
 
 def get_single(path):
 	if not 'gw2_config' in globals():
@@ -129,6 +128,8 @@ def get_list(path, ids, id_field='ids', chunk_size=50):
 
 
 def format_gold(copper):
+	if not 'gw2_config' in globals():
+		init()
 	groups = re.match('^(\\d*?)(\\d{0,2}?)(\\d{0,2})$', str(copper)).groups()
 	parts = []
 	if groups[0]:
@@ -140,6 +141,7 @@ def format_gold(copper):
 	else:
 		parts.append('0%s' % gw2_config['copper_unit'])
 	return ' '.join(parts)
+
 
 if __name__ == "__main__":
 	import argparse
