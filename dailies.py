@@ -12,19 +12,27 @@ def main():
 		'special': 'Special'
 	}
 
-	dailies = gw2api.get_single(
-	 'achievements/daily/tomorrow' if args.tomorrow else 'achievements/daily')
+	dailies_endpoint = 'achievements/daily/tomorrow' if args.tomorrow else 'achievements/daily'
+	responses = gw2api.get_multi([dailies_endpoint, 'account', 'account/achievements'])
+	dailies = responses[dailies_endpoint]
+	account = responses['account']
+	unlocked = []
+	for achievement in responses['account/achievements']:
+		if achievement['done']:
+			unlocked.append(achievement['id'])
 
-	ids = []
+	achievement_ids = []
 	for category, entries in dailies.items():
 		for daily in entries:
-			ids.append(daily['id'])
+			achievement_ids.append(daily['id'])
 
 	achievements = {}
-	for achievement in gw2api.get_list('achievements', ids): #[d['id'] for d in dailies]):
+	for achievement in gw2api.get_list('achievements', achievement_ids):
 		achievements[achievement['id']] = achievement
 
-	print('%s:' % _('Tomorrow\'s Dailies' if args.tomorrow else 'Today\'s Dailies'))
+	print('%s %s:' % (
+	 _('Tomorrow\'s Dailies for' if args.tomorrow else 'Today\'s Dailies for'),
+	 account['name']))
 	for category, entries in dailies.items():
 		if args.ignore and category in args.ignore:
 			continue
@@ -32,7 +40,23 @@ def main():
 		if entries and not args.verbose:
 			print('\n== %s ==' % category_name)
 		for daily in entries:
-			name = achievements[daily['id']]['name']
+			achievement = achievements[daily['id']]
+			if 'prerequisites' in achievement:
+				for prerequesite in achievement['prerequisites']:
+					if not prerequesite in unlocked:
+						continue
+			if 'required_access' in daily:
+				required_product = daily['required_access']['product']
+				required_condition = daily['required_access']['condition']
+				if not required_product or not required_condition in ['HasAccess', 'NoAccess']:
+					raise ValueError(
+					 'Unknown required access description: %s' % daily['required_access'])
+				if required_condition == 'HasAccess' and not required_product in account['access']:
+					continue
+				if required_condition == 'NoAccess' and required_product in account['access']:
+					continue
+
+			name = achievement['name']
 			min_level = daily['level']['min']
 			max_level = daily['level']['max']
 			if not args.verbose:
@@ -42,12 +66,14 @@ def main():
 				print(achievements[daily['id']]['requirement'])
 
 
+
 # PSEUDO-I18N
-messages = ({'de': {}})
-messages['de']['Today\'s Dailies'] = 'Heutige Dailies'
-messages['de']['Tomorrow\'s Dailies'] = 'Morgige Dailies'
-messages['de']['Fractals'] = 'Fraktale'
-messages['de']['Special'] = 'Spezial'
+messages = ({'de': {
+	'Today\'s Dailies for': u'Heutige Dailies für',
+	'Tomorrow\'s Dailies for': u'Morgige Dailies für',
+	'Fractals': 'Fraktale',
+	'Special': 'Spezial'
+}})
 
 def _(text):
 	if config['language'] in messages:
