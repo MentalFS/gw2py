@@ -67,13 +67,22 @@ def main():
 				elif required_condition == 'NoAccess' and required_product in account['access']:
 					continue
 
-			name = achievement['name']
+			level_suffix = ''
 			min_level = daily['level']['min']
 			max_level = daily['level']['max']
+			if args.max_level and max_level < 80:
+				continue
+			if not args.max_level:
+				if min_level == max_level:
+					level_suffix = ' (%d)' % max_level
+				elif min_level != 1 and max_level != 80:
+					level_suffix = ' (%d - %d)' % (min_level, max_level)
+
+			name = achievement['name']
 			if not args.verbose:
-				print('%s (%d - %d)' % ( name, min_level, max_level ))
+				print('%s%s' % (name, level_suffix))
 			else:
-				print('\n== %s: %s (%d - %d) ==' % ( category_name, name, min_level, max_level ))
+				print('\n== %s: %s%s ==' % (category_name, name, level_suffix))
 				if 'rewards' in achievement:
 					for reward in achievement['rewards']:
 						if reward['type'] == 'Coins':
@@ -89,9 +98,9 @@ def main():
 messages = ({'de': {
 	'Today\'s Dailies for': u'Heutige Dailies für',
 	'Tomorrow\'s Dailies for': u'Morgige Dailies für',
-	'Fractals': 'Fraktale',
-	'Special': 'Spezial',
-	'Special reward': 'Spezial-Belohnung'
+	'Fractals': u'Fraktale',
+	'Special': u'Spezial',
+	'Special reward': u'Spezial-Belohnung'
 }})
 
 def _(text):
@@ -105,6 +114,8 @@ import argparse
 argparser=argparse.ArgumentParser(description='List the current or upcoming dailies')
 argparser.add_argument('-t', '--tomorrow', dest='tomorrow', action='store_true',
  help='List upcoming dailies.')
+argparser.add_argument('-m', '--max-level', dest='max_level', action='store_true',
+ help='Only show dailies for level 80.')
 argparser.add_argument('-i', '--ignore', dest='ignore', nargs='*',
  help='Ignore categories: pve pvp wvw fractals special')
 argparser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
