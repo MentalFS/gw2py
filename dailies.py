@@ -41,8 +41,8 @@ def main():
 		for item in gw2api.get_list('items', item_ids):
 			items[item['id']] = item
 
-	print(_('Tomorrow\'s Dailies for %s' if args.tomorrow else
-	 'Today\'s Dailies for %s') % account['name'])
+	print(_('Tomorrow\'s Dailies for %s:' if args.tomorrow else
+	 'Today\'s Dailies for %s:') % account['name'])
 	for category, entries in dailies.items():
 		if args.ignore and category in args.ignore:
 			continue
