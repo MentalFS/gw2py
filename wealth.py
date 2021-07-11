@@ -128,23 +128,16 @@ def main():
 	 (query['account']['name'], gold(total_sum_buy), gold(total_sum_sell))))
 
 # PSEUDO-I18N
-messages = ({'de': {}})
-
-messages['de']['Analyzing storage of %s...'] = \
- 'Analysiere Lager von %s...'
-messages['de']['Adding %s - %d items, %s / %s'] = \
- 'Füge %s hinzu - %d Gegenstände, %s / %s'
-messages['de']['Material: %s - %s / %s'] = \
- 'Material: %s - %s / %s'
-messages['de']['Items that are not materials - %s / %s'] = \
- 'Gegenstände, die keine Materialien sind - %s / %s'
-messages['de']['Most valuable single item: %s - %s / %s.'] = \
- 'Wertvollster Einzelgegenstand: %s - %s / %s.'
-messages['de']['Most valuable stack: %s - %d items, %s / %s.'] = \
- 'Wertvollster Stapel: %s - %d Stück, %s / %s.'
-messages['de']['%s, your storage is worth %s / %s.'] = \
- '%s, dein Lager hat einen Wert von %s / %s.'
-
+messages = ({'de': {
+	'Analyzing storage of %s...': u'Analysiere Lager von %s...',
+	'Adding %s - %d items, %s / %s': u'Füge %s hinzu - %d Gegenstände, %s / %s',
+	'Material: %s - %s / %s': u'Material: %s - %s / %s',
+	'Items that are not materials - %s / %s': u'Gegenstände, die keine Materialien sind - %s / %s',
+	'Most valuable single item: %s - %s / %s.': u'Wertvollster Einzelgegenstand: %s - %s / %s.',
+	'Most valuable stack: %s - %d items, %s / %s.':
+		u'Wertvollster Stapel: %s - %d Stück, %s / %s.',
+	'%s, your storage is worth %s / %s.': u'%s, dein Lager hat einen Wert von %s / %s.'
+}})
 def _(text):
 	if config['language'] in messages:
 		if text in messages[config['language']]:

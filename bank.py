@@ -24,12 +24,11 @@ def main():
 	
 
 # PSEUDO-I18N
-messages = ({'de': {}})
-
-messages['de']['Bank contents of %s:'] = 'Bankinhalt von %s:'
-messages['de']['<empty>'] = '<leer>'
-messages['de']['<unknown ID: %d>'] = '<unbekannte ID: %d>'
-
+messages = ({'de': {
+	'Bank contents of %s:': u'Bankinhalt von %s:',
+	'<empty>': u'<leer>',
+	'<unknown ID: %d>': u'<unbekannte ID: %d>'
+}})
 def _(text):
 	if config['language'] in messages:
 		if text in messages[config['language']]:

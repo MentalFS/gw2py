@@ -23,13 +23,10 @@ def main():
 			 items[transaction['item_id']]['name'], gold(transaction['price']))))
 
 # PSEUDO-I18N
-messages = ({'de': {}})
-
-messages['de']['Current buy transactions of %s:'] = \
- 'Aktuelle Einkaufstransaktionen von %s:'
-messages['de']['No current buy transactions of %s.'] = \
- 'Keine aktuellen Einkaufstransaktionen von %s.'
-
+messages = ({'de': {
+	'Current buy transactions of %s:': u'Aktuelle Einkaufstransaktionen von %s:',
+	'No current buy transactions of %s.': u'Keine aktuellen Einkaufstransaktionen von %s.'
+}})
 def _(text):
 	if config['language'] in messages:
 		if text in messages[config['language']]:

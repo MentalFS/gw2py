@@ -2,8 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os, re, json, pycurl
-from io import BytesIO
-from configparser import ConfigParser
+try:
+	from io import BytesIO
+except ImportError:
+    from StringIO import StringIO as BytesIO
+try:
+	from configparser import ConfigParser
+except ImportError:
+	from ConfigParser import ConfigParser
 
 # These scripts expect an ini-file, either config.ini at the script location or ~/.gw2rc
 # 
@@ -143,7 +149,7 @@ def format_gold(copper):
 	return ' '.join(parts)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	import argparse
 
 	argparser=argparse.ArgumentParser(description='Get raw json from GW2 API v2')

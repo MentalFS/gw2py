@@ -41,9 +41,8 @@ def main():
 		for item in gw2api.get_list('items', item_ids):
 			items[item['id']] = item
 
-	print('%s %s:' % (
-	 _('Tomorrow\'s Dailies for' if args.tomorrow else 'Today\'s Dailies for'),
-	 account['name']))
+	print(_('Tomorrow\'s Dailies for %s' if args.tomorrow else
+	 'Today\'s Dailies for %s') % account['name'])
 	for category, entries in dailies.items():
 		if args.ignore and category in args.ignore:
 			continue
@@ -96,13 +95,12 @@ def main():
 
 # PSEUDO-I18N
 messages = ({'de': {
-	'Today\'s Dailies for': u'Heutige Dailies für',
-	'Tomorrow\'s Dailies for': u'Morgige Dailies für',
+	'Today\'s Dailies for %s:': u'Heutige Dailies für %s:',
+	'Tomorrow\'s Dailies for %s:': u'Morgige Dailies für %s:',
 	'Fractals': u'Fraktale',
 	'Special': u'Spezial',
 	'Special reward': u'Spezial-Belohnung'
 }})
-
 def _(text):
 	if config['language'] in messages:
 		if text in messages[config['language']]:
