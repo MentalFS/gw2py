@@ -23,12 +23,23 @@ def main():
 
 	achievement_ids = []
 	for category, entries in dailies.items():
+		if args.ignore and category in args.ignore:
+			continue
 		for daily in entries:
 			achievement_ids.append(daily['id'])
 
 	achievements = {}
+	item_ids = []
 	for achievement in gw2api.get_list('achievements', achievement_ids):
 		achievements[achievement['id']] = achievement
+		if 'rewards' in achievement:
+			for reward in achievement['rewards']:
+				if reward['type'] == 'Item':
+					item_ids.append(reward['id'])
+	items = {}
+	if args.verbose:
+		for item in gw2api.get_list('items', item_ids):
+			items[item['id']] = item
 
 	print('%s %s:' % (
 	 _('Tomorrow\'s Dailies for' if args.tomorrow else 'Today\'s Dailies for'),
@@ -53,7 +64,7 @@ def main():
 					 'Unknown required access description: %s' % daily['required_access'])
 				if required_condition == 'HasAccess' and not required_product in account['access']:
 					continue
-				if required_condition == 'NoAccess' and required_product in account['access']:
+				elif required_condition == 'NoAccess' and required_product in account['access']:
 					continue
 
 			name = achievement['name']
@@ -63,7 +74,14 @@ def main():
 				print('%s (%d - %d)' % ( name, min_level, max_level ))
 			else:
 				print('\n== %s: %s (%d - %d) ==' % ( category_name, name, min_level, max_level ))
-				print(achievements[daily['id']]['requirement'])
+				if 'rewards' in achievement:
+					for reward in achievement['rewards']:
+						if reward['type'] == 'Coins':
+							print(gw2api.format_gold(reward['count']))
+						elif reward['type'] == 'Item':
+							print('%d %s' % (reward['count'], items[reward['id']]['name']))
+						else:
+							print(_('Special reward'))
 
 
 
@@ -72,7 +90,8 @@ messages = ({'de': {
 	'Today\'s Dailies for': u'Heutige Dailies für',
 	'Tomorrow\'s Dailies for': u'Morgige Dailies für',
 	'Fractals': 'Fraktale',
-	'Special': 'Spezial'
+	'Special': 'Spezial',
+	'Special reward': 'Spezial-Belohnung'
 }})
 
 def _(text):
@@ -89,7 +108,7 @@ argparser.add_argument('-t', '--tomorrow', dest='tomorrow', action='store_true',
 argparser.add_argument('-i', '--ignore', dest='ignore', nargs='*',
  help='Ignore categories: pve pvp wvw fractals special')
 argparser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
- help='Show longer descriptions.')
+ help='Show rewards for each daily.')
 argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
  help='Profile in INI file')
 args = argparser.parse_args()
