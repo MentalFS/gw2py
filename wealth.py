@@ -5,14 +5,9 @@ import gw2api
 from gw2api import format_gold as gold
 
 def main():
-	# for some reason account bound items ended up in the auction house
-	ignored_items = [ 19983 ]
-	
 	characters_path='characters?page=0'
 	query = gw2api.get_multi(['account', 'account/bank', 'account/materials', characters_path])
 	material_ids = [material['id'] for material in query['account/materials']]
-	item_ids = set([item['id'] if item else None for item in
-		query['account/bank'] + query['account/materials']])
 	
 	if not args.short:
 		print((_('Analyzing storage of %s...') % query['account']['name']))
@@ -31,11 +26,12 @@ def main():
 	for item in query['account/bank'] + query['account/materials'] + inventory_slots:
 		if item == None:
 			continue
+		if 'flags' in item and 'AccountBound' in item['flags']:
+			continue
 		if item['id'] not in item_counts:
 			item_counts[item['id']] = 0
-		if item['id'] in ignored_items:
-			continue
 		item_counts[item['id']] += item['count']
+	item_ids = item_counts.keys()
 	
 	item_info = {}
 	if args.verbose: 
@@ -64,8 +60,6 @@ def main():
 	nonmaterial_sum_buy = 0
 	nonmaterial_sum_sell = 0
 	for item in item_ids:
-		if item == None:
-			continue
 		if item not in item_prices:
 			continue
 		
