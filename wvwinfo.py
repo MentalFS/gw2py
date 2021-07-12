@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# this scripts supports termcolor
 from __future__ import print_function
-import gw2api, termcolor
+import gw2api, sys
 from unicodedata import normalize
 
 def main():
@@ -76,10 +77,19 @@ def main():
 				 key=lambda world: normalize('NFKD', world_names[world]).encode('ASCII', 'ignore')):
 					print(world_names[world])
 
+
+try:
+	from termcolor import colored as term_colored
+except ImportError:
+	def term_colored(text, color, attrs=None):
+		return text
 def colored(text, color):
+	if not sys.stdout.isatty():
+		return text
 	if color == 'blue':
 		color = 'cyan'
-	return termcolor.colored(text, color)
+	return term_colored(text, color, attrs=['bold'])
+
 
 # PSEUDO-I18N
 messages = ({'de': {
