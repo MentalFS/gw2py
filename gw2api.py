@@ -5,7 +5,7 @@ import os, re, json, pycurl
 try:
 	from io import BytesIO
 except ImportError:
-    from StringIO import StringIO as BytesIO
+	from StringIO import StringIO as BytesIO
 try:
 	from configparser import ConfigParser
 except ImportError:
