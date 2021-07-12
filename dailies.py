@@ -74,7 +74,7 @@ def main():
 			if not args.max_level:
 				if min_level == max_level:
 					level_suffix = ' (%d)' % max_level
-				elif min_level != 1 and max_level != 80:
+				elif min_level != 1 or max_level != 80:
 					level_suffix = ' (%d - %d)' % (min_level, max_level)
 
 			name = achievement['name']
@@ -82,14 +82,15 @@ def main():
 				print('%s%s' % (name, level_suffix))
 			else:
 				print('\n== %s: %s%s ==' % (category_name, name, level_suffix))
+				print(achievement['requirement'])
 				if 'rewards' in achievement:
 					for reward in achievement['rewards']:
 						if reward['type'] == 'Coins':
-							print(gw2api.format_gold(reward['count']))
+							print('- %s' % gw2api.format_gold(reward['count']))
 						elif reward['type'] == 'Item':
-							print('%d %s' % (reward['count'], items[reward['id']]['name']))
+							print('- %d %s' % (reward['count'], items[reward['id']]['name']))
 						else:
-							print(_('Special reward'))
+							print('- %s' % _('Special reward'))
 
 
 
@@ -114,10 +115,10 @@ argparser.add_argument('-t', '--tomorrow', dest='tomorrow', action='store_true',
  help='List upcoming dailies.')
 argparser.add_argument('-m', '--max-level', dest='max_level', action='store_true',
  help='Only show dailies for level 80.')
-argparser.add_argument('-i', '--ignore', dest='ignore', nargs='*',
+argparser.add_argument('-i', '--ignore', dest='ignore', nargs='+',
  help='Ignore categories: pve pvp wvw fractals special')
 argparser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
- help='Show rewards for each daily.')
+ help='Show description and rewards for each daily.')
 argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
  help='Profile in INI file')
 args = argparser.parse_args()
