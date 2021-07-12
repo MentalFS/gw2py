@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import gw2api
-from termcolor import colored
+import gw2api, termcolor
+from unicodedata import normalize
 
 def main():
 	worlds_path='worlds?ids=all'
@@ -58,42 +58,28 @@ def main():
 			
 		if args.all or is_own_match:
 			print('=== %s %s (%s) ===' % (_('Matchup'), match['id'], match['start_time'][:10]))
-			print('  ', colored(world_names[match['worlds']['green']], 'green'), end=' ')
-			if 'all_worlds'	in match:
-				for world in match['all_worlds']['green']:
-					if world != match['worlds']['green']:
-						print('+', colored(world_names[world], 'green'), end=' ')
-			print('(%s)' % match['scores']['green'])
-			print('vs', colored(world_names[match['worlds']['red']], 'red'), end=' ')
-			if 'all_worlds'	in match:
-				for world in match['all_worlds']['red']:
-					if world != match['worlds']['red']:
-						print('+', colored(world_names[world], 'red'), end=' ')
-			print('(%s)' % match['scores']['red'])
-			print('vs', colored(world_names[match['worlds']['blue']], 'cyan'), end=' ')
-			if 'all_worlds'	in match:
-				for world in match['all_worlds']['blue']:
-					if world != match['worlds']['blue']:
-						print('+', colored(world_names[world], 'cyan'), end=' ')
-			print('(%s)' % match['scores']['blue'])
-
+			for world_color in sorted(['green', 'red', 'blue'],
+			 key=lambda world_color: -match['scores'][world_color]):
+				print('  ', colored(world_names[match['worlds'][world_color]], world_color), end=' ')
+				if 'all_worlds'	in match:
+					for world in match['all_worlds'][world_color]:
+						if world != match['worlds'][world_color]:
+							print('+', colored(world_names[world], world_color), end=' ')
+				print('(%s)' % match['scores'][world_color])
 	
-	if args.color:
-		if args.all or own_color == 'green':
-			print()
-			print('===', colored(_('Green worlds'), 'green'), '===')
-			for world in sorted(worlds_by_color['green']):
-				print(world_names[world])
-		if args.all or own_color == 'red':
-			print()
-			print('===', colored(_('Red worlds'), 'red'), '===')
-			for world in sorted(worlds_by_color['red']):
-				print(world_names[world])
-		if args.all or own_color == 'blue':
-			print()
-			print('===', colored(_('Blue worlds'), 'cyan'), '===')
-			for world in sorted(worlds_by_color['blue']):
-				print(world_names[world])
+	if not args.short:
+		for world_color in ['green', 'red', 'blue']:
+			if args.all or own_color == world_color:
+				print()
+				print('===', colored(_('%s worlds' % world_color.title()), world_color), '===')
+				for world in sorted(worlds_by_color[world_color],
+				 key=lambda world: normalize('NFKD', world_names[world]).encode('ASCII', 'ignore')):
+					print(world_names[world])
+
+def colored(text, color):
+	if color == 'blue':
+		color = 'cyan'
+	return termcolor.colored(text, color)
 
 # PSEUDO-I18N
 messages = ({'de': {
@@ -113,8 +99,8 @@ import argparse
 argparser=argparse.ArgumentParser(description='List the current WvW matches.')
 argparser.add_argument('-a', '--all', dest='all', action='store_true',
  help='List info for all worlds.')
-argparser.add_argument('-c', '--color', dest='color', action='store_true',
- help='List info for worlds by color.')
+argparser.add_argument('-s', '--short', dest='short', action='store_true',
+ help='Don\'t list worlds by color.')
 argparser.add_argument('profile', default='default', nargs='?', metavar='PROFILE',
  help='Profile in INI file')
 args = argparser.parse_args()
